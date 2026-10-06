@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sven & Vedrana — Pozivnica na Vjenčanje</title>
+  
+  <!-- Fontovi s Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================
+       1. GLOBALNI STILOVI & PALETA BOJA
+       ========================================== */
+    :root {
+      --bg-dark: #0a101d;
+      --card-bg: rgba(16, 25, 46, 0.75);
+      --card-border: rgba(212, 175, 55, 0.25);
+      --gold-primary: #dfba6d;
+      --gold-muted: #b89851;
+      --text-light: #e2e8f0;
+      --text-dim: #94a3b8;
+      --font-serif: 'Cormorant Garamond', serif;
+      --font-sans: 'Montserrat', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 20%, rgba(25, 40, 75, 0.6) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(20, 30, 55, 0.5) 0%, transparent 50%);
+      color: var(--text-light);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================
+       2. INTRO KOVERTA ANIMACIJA
+       ========================================== */
+    #envelope-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--bg-dark);
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+    }
+
+    .envelope-wrapper {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: #111a2e;
+      border-radius: 4px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 15px rgba(223, 186, 109, 0.2);
+      perspective: 800px;
+      cursor: pointer;
+    }
+
+    .envelope-body {
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid #16223b;
+      border-right: 150px solid #16223b;
+      border-bottom: 110px solid #1a2846;
+      border-top: 90px solid transparent;
+      border-radius: 0 0 4px 4px;
+      z-index: 3;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 110px solid #203052;
+      transform-origin: top;
+      transition: transform 1s ease-in-out;
+      z-index: 4;
+    }
+
+    .wax-seal {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+      background: radial-gradient(circle, #dfba6d 0%, #8c6a21 100%);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a101d;
+      font-size: 14px;
+      transition: opacity 0.4s ease 0.4s;
+    }
+
+    .letter-preview {
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+      right: 20px;
+      height: 160px;
+      background: #0d1629;
+      border: 1px solid var(--gold-primary);
+      border-radius: 4px;
+      z-index: 2;
+      transition: transform 0.8s ease-in-out 0.8s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .letter-preview h3 {
+      font-family: var(--font-serif);
+      color: var(--gold-primary);
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+    }
+
+    .envelope-wrapper.open .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .envelope-wrapper.open .wax-seal {
+      opacity: 0;
+    }
+
+    .envelope-wrapper.open .letter-preview {
+      transform: translateY(-80px);
+    }
+
+    #envelope-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    /* ==========================================
+       3. GLAVNI SADRŽAJ I BLOKOVI
+       ========================================== */
+    .main-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .main-container.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .celestial-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .celestial-divider .line {
+      width: 40px;
+      height: 1px;
+      background-color: var(--gold-muted);
+    }
+
+    .celestial-divider .diamond {
+      width: 10px;
+      height: 10px;
+      background-color: var(--gold-primary);
+      transform: rotate(45deg);
+      position: relative;
+    }
+
+    .celestial-divider .diamond::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 4px;
+      height: 4px;
+      background-color: var(--bg-dark);
+    }
+
+    /* Hero Sekcija */
+    .hero-block {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .subtitle-top {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-muted);
+      margin-bottom: 20px;
+    }
+
+    .main-title {
+      font-family: var(--font-serif);
+      font-size: 3.5rem;
+      font-weight: 400;
+      color: var(--gold-primary);
+      line-height: 1.1;
+      letter-spacing: 1px;
+    }
+
+    .ampersand {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      color: var(--gold-muted);
+      margin: 10px 0;
+      font-style: italic;
+    }
+
+    .tagline {
+      font-family: var(--font-serif);
+      font-size: 1.1rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin-top: 15px;
+    }
+
+    /* Blokovi / Kartice */
+    .content-block {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 35px 25px;
+      margin-bottom: 30px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .block-title {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      color: var(--gold-primary);
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    .block-text {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* Odbrojavanje Blok */
+    .countdown-circle {
+      width: 270px;
+      height: 270px;
+      border: 1px solid var(--card-border);
+      border-radius: 50%;
+      margin: 20px auto 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 16, 29, 0.5);
+    }
+
+    .timer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 25px;
+      text-align: center;
+    }
+
+    .timer-item .number {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .timer-item .label {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-muted);
+      margin-top: 4px;
+    }
+
+    .date-display {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--gold-primary);
+      text-transform: uppercase;
+    }
+
+    /* Okvir za Sliku */
+    .venue-image-container {
+      width: 100%;
+      height: 200px;
+      border-radius: 16px;
+      border: 1px solid var(--card-border);
+      margin: 20px 0;
+      overflow: hidden;
+      background: #111a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .venue-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Dress Code Paleta */
+    .color-palette {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 25px 0;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .swatch-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 8px;
+    }
+
+    .swatch-label {
+      font-size: 0.6rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    .event-card {
+      background: rgba(13, 22, 41, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 25px 20px;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    /* Gumb Styling */
+    .btn-gold {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 14px 32px;
+      border: 1px solid var(--gold-primary);
+      border-radius: 30px;
+      background: transparent;
+      color: var(--gold-primary);
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-primary);
+      color: var(--bg-dark);
+      box-shadow: 0 0 15px rgba(223, 186, 109, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. INTRO KOVERTA ANIMACIJA -->
+  <div id="envelope-overlay" onclick="revealContent()">
+    <div class="envelope-wrapper" id="envelope">
+      <div class="envelope-flap"></div>
+      <div class="wax-seal">✦</div>
+      <div class="letter-preview">
+        <h3>SVEN & VEDRANA</h3>
+        <div class="celestial-divider" style="margin: 8px 0;">
+          <div class="line" style="width:20px;"></div>
+          <div class="diamond" style="width:6px; height:6px;"></div>
+          <div class="line" style="width:20px;"></div>
+        </div>
+        <p style="font-size: 0.6rem; letter-spacing: 1px; color: var(--gold-muted);">POZIVNICA</p>
+      </div>
+      <div class="envelope-body"></div>
+    </div>
+  </div>
+
+  <!-- 2. GLAVNI SADRŽAJ -->
+  <div class="main-container" id="mainContent">
+    
+    <!-- HERO SEKCIJA -->
+    <header class="hero-block">
+      <p class="subtitle-top">Pod zvjezdanim nebom</p>
+      <h1 class="main-title">Sven</h1>
+      <div class="ampersand">&</div>
+      <h1 class="main-title">Vedrana</h1>
+      
+      <div class="celestial-divider">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+      
+      <p class="tagline">Nebeska Ljubavna Serenada</p>
+    </header>
+
+    <!-- PORUKA SEKCIJA -->
+    <section class="content-block">
+      <h2 class="block-title">Draga obitelji i prijatelji,</h2>
+      <p class="block-text">
+        Kao zvijezde koje su pronašle svoje orbite, naši putevi su se spojili u predivnom svemiru. Čast nam je pozvati vas da nam se pridružite u trenutku kada ćemo jedno drugome izreći sudbonosno da i započeti zajedničko putovanje pod okriljem neba.
+      </p>
+      <div class="celestial-divider">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+    </section>
+
+    <!-- ODBROJAVANJE SEKCIJA -->
+    <section class="content-block">
+      <h2 class="block-title">Slavlje Počinje Za</h2>
+      <div class="countdown-circle">
+        <div class="diamond" style="margin-bottom: 15px;"></div>
+        <div class="timer-grid">
+          <div class="timer-item">
+            <div class="number" id="days">00</div>
+            <div class="label">Dana</div>
+          </div>
+          <div class="timer-item">
+            <div class="number" id="hours">00</div>
+            <div class="label">Sati</div>
+          </div>
+          <div class="timer-item">
+            <div class="number" id="minutes">00</div>
+            <div class="label">Minuta</div>
+          </div>
+          <div class="timer-item">
+            <div class="number" id="seconds">00</div>
+            <div class="label">Sekundi</div>
+          </div>
+        </div>
+        <div class="date-display">2. Srpnja 2027.</div>
+      </div>
+    </section>
+
+    <!-- LOKACIJA SEKCIJA -->
+    <section class="content-block">
+      <p class="subtitle-top" style="margin-bottom: 5px;">Mjesto Proslave</p>
+      <h2 class="block-title">Lokacija</h2>
+      
+      <div class="celestial-divider">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+
+      <h3 class="event-title" style="margin-top: 15px;">Imanje Corberon</h3>
+      <p class="block-text" style="color: var(--text-dim);">Šibice, Zaprešić, Hrvatska</p>
+      
+      <div class="venue-image-container">
+        <!-- Promijenite "corberon.jpg" s vašom slikom ako je imate lokano -->
+        <img src="corberon.jpg" alt="Imanje Corberon" onerror="this.style.display='none'; this.parentNode.innerHTML='<div style=\'color:var(--gold-muted); font-size:0.8rem; letter-spacing:2px; text-transform:uppercase;\'>✦ IMANJE CORBERON ✦</div>';">
+      </div>
+
+      <a href="https://maps.google.com/?q=Imanje+Corberon+Zapresic" target="_blank" class="btn-gold">📍 Otvori u Google Maps</a>
+    </section>
+
+    <!-- DRESS CODE SEKCIJA -->
+    <section class="content-block">
+      <p class="subtitle-top" style="margin-bottom: 5px;">Stil Vjenčanja</p>
+      <h2 class="block-title">Dress Code</h2>
+      
+      <div class="celestial-divider">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+
+      <p class="block-text">
+        S veseljem vas pozivamo da se odjenete veselo i šareno! <br><strong>Pravilo: Sve boje su dobrodošle osim crne, bijele ili bež.</strong>
+      </p>
+
+      <div class="color-palette">
+        <div class="color-swatch">
+          <div class="swatch-circle" style="background-color: #e63946;"></div>
+          <span class="swatch-label">Crvena</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-circle" style="background-color: #457b9d;"></div>
+          <span class="swatch-label">Plava</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-circle" style="background-color: #2a9d8f;"></div>
+          <span class="swatch-label">Smaragdna</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-circle" style="background-color: #e76f51;"></div>
+          <span class="swatch-label">Koraljna</span>
+        </div>
+        <div class="color-swatch">
+          <div class="swatch-circle" style="background-color: #9b5de5;"></div>
+          <span class="swatch-label">Ljubičasta</span>
+        </div>
+      </div>
+
+      <div class="event-card" style="text-align: center; margin-bottom: 15px;">
+        <p class="subtitle-top" style="color: var(--gold-primary); margin-bottom: 8px;">Za Dame</p>
+        <p class="block-text" style="font-size: 0.85rem;">Svijetle, šarene i elegantne haljine ili odijela. Izbjegavajte bijele, bež i crne tonove.</p>
+      </div>
+
+      <div class="event-card" style="text-align: center;">
+        <p class="subtitle-top" style="color: var(--gold-primary); margin-bottom: 8px;">Za Gospodu</p>
+        <p class="block-text" style="font-size: 0.85rem;">Elegantna odijela ili kombinacije u boji, uz zanimljive detalje poput šarenih kravata ili rupčića. Izbjegavajte klasična crna i bež odijela.</p>
+      </div>
+    </section>
+
+    <!-- ZADNJI LINK / RSVP SEKCIJA -->
+    <section class="content-block">
+      <p class="subtitle-top" style="margin-bottom: 5px;">RSVP</p>
+      <h2 class="block-title">Potvrdite Dolazak</h2>
+      
+      <div class="celestial-divider">
+        <div class="line"></div>
+        <div class="diamond"></div>
+        <div class="line"></div>
+      </div>
+
+      <p class="block-text" style="margin-bottom: 20px;">
+        Molimo vas da svoj dolazak potvrdite najkasnije do 15. svibnja 2027. kako bismo zajedno proslavili naš dan pod zvijezdama.
+      </p>
+
+      <a href="#" class="btn-gold" style="font-weight: 500;">POTVRDI DOLAZAK</a>
+    </section>
+
+  </div>
+
+  <!-- JS ANIMACIJA & SAT ODBROJAVANJA -->
+  <script>
+    let isRevealed = false;
+
+    function revealContent() {
+      if (isRevealed) return;
+      isRevealed = true;
+
+      const envelope = document.getElementById('envelope');
+      const overlay = document.getElementById('envelope-overlay');
+      const mainContent = document.getElementById('mainContent');
+
+      envelope.classList.add('open');
+
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+        mainContent.classList.add('visible');
+      }, 1500);
+    }
+
+    // Automatsko pokretanje nakon ucitavanja
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(revealContent, 600);
+    });
+
+    // Sat odbrojavanja do 2.7.2027.
+    const targetDate = new Date('July 2, 2027 17:00:00').getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+        document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+        document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+        document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+  </script>
+</body>
+</html>
